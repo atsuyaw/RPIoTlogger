@@ -1,7 +1,6 @@
 from wifi import *
 from intTemp import *
 from OneTemp import *
-from pulseCnt import *
 from rawADC import *
 from postAPI import *
 import network
@@ -21,6 +20,6 @@ while True:
     RAW_VB = aveRawV(RAW_VB_PIN,RAW_VB_MAX)
     ONE_TEMP_PIN = 12
     ONE_TEMP = aveOneTemp(ONE_TEMP_PIN)
-    DATUM = f'int_temp={INT_TEMP},one_temp={ONE_TEMP},voltage={RAW_V},rawVmax={RAW_VMAX},current={RAW_VB},rawVBmax={RAW_VB_MAX},ver={APP}{VER}'
+    DATUM = f'int_temp={INT_TEMP},one_temp={ONE_TEMP},voltage={RAW_V},rawVmax={RAW_VMAX},current={RAW_VB},rawVBmax={RAW_VB_MAX}'
     postAPI(HOST,DATUM)
     sleep(60)

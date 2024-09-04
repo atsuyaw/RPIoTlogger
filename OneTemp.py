@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
 from machine import Pin
-import onewire, ds18x20, time
+import onewire
+import ds18x20
+import time
 # https://github.com/raspberrypi/pico-micropython-examples/blob/master/adc/temperature.py
 # https://teratail.com/questions/buag9os7aoj9en
 import machine
