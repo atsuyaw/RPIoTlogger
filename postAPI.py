@@ -1,6 +1,3 @@
-import time
-# from machine import Pin
-import machine
 import urequests
 from config import *
 from blink import *
@@ -15,18 +12,20 @@ headers = {
 # set debug True or False
 debug = True
 
-def postAPI(HOST,DATUM):
+
+def postAPI(HOST, DATUM):
     BODY = f"{HOST} {DATUM}"
     print(BODY)
-    response = urequests.post(ENDPOINT, headers=headers, data=f'{BODY}')# API POST postAPI('temp',HOST','temp=35')
+    response = urequests.post(ENDPOINT, headers=headers, data=f'{BODY}')#  API POST postAPI('temp',HOST','temp=35')
     if response.status_code == 204:
         print("Data posted successfully")
         response.close()
-        blink(3,0.1)
+        blink(3, 0.1)
     else:
         print("Failed to post data")
         print("Status Code:", response.status_code)
         print("Response:", response.text)
         response.close()
-        blink(10,0.5)
+        blink(10, 0.5)
     return BODY
+
