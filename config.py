@@ -1,11 +1,10 @@
 APP = 'atsuyawRPPi'
-VER = '1.0.0'
+VER = '1.0.1'
 
 # Set secrets
 # Wi-Fi
 SSID = 'SSID'
 PASSWORD = 'PWD'
-HOSTNAME = 'atsuyawRPPx'
 
 # InfluxDB
 REMOTE = 'http://endpointURL:8086'

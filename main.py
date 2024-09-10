@@ -6,8 +6,7 @@ from postAPI import *
 import network
 
 print('IP: ' + connect())
-print('Host name: ' + setHost())
-HOST = network.hostname()
+MAC = getMac()
 
 while True:
     INT_TEMP = aveIntTemp()
@@ -25,6 +24,6 @@ while True:
             + f'rawVmax={RAW_VMAX},'\
             + f'current={RAW_VB},'\
             + f'rawVBmax={RAW_VB_MAX}'
-    postAPI(HOST, DATUM)
+    postAPI(MAC, DATUM)
     utime.sleep(60)
 
