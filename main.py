@@ -1,3 +1,11 @@
+from config import *
+# SSID =
+# PASSWORD =
+# HOSTNAME =
+# REMOTE =
+# ORG_ID =
+# BUCKET =
+# ACCESS_TOKEN =
 from wifi import *
 from intTemp import *
 from OneTemp import *
@@ -23,7 +31,8 @@ while True:
             + f'voltage={RAW_V},'\
             + f'rawVmax={RAW_VMAX},'\
             + f'current={RAW_VB},'\
-            + f'rawVBmax={RAW_VB_MAX}'
+            + f'rawVBmax={RAW_VB_MAX},'\
+            + f'ver={VER}'
     postAPI(MAC, DATUM)
     utime.sleep(60)
 
