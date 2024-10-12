@@ -29,8 +29,8 @@ jobs:
         uses: hrzn/github-tag-action@master
         id: bump_dry
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: true
+          WITH_V: true
           BUMP_TYPE: ${{ github.event.inputs.bump_type }}
 
       - name: Commit new ver
