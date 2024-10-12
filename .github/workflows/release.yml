@@ -6,6 +6,11 @@ on:
       bump_type:
         required: true
         default: "#patch"
+        type: choice
+        options:
+          - "#major"
+          - "#minor"
+          - "#patch"
 
 env:
   TZ: "Asia/Tokyo"
@@ -27,7 +32,7 @@ jobs:
 
       - name: Determine next version
         uses: hrzn/github-tag-action@master
-        id: bump_dry
+        id: bump
         env:
           DRY_RUN: true
           WITH_V: true
@@ -35,19 +40,19 @@ jobs:
 
       - name: Commit new ver
         run: |
-          git checkout -b $release/{{ steps.bump_dry.outputs.new_tag }}
+          git checkout -b $release/{{ steps.bump.outputs.new_tag }}
           cat <<EOF > "$FILE_NAME"
           $FILE_HEADER
           # $GITHUB_REPOSITORY $GITHUB_RUN_ID
           # $(date +'%Y-%m-%d %H:%M:%S')
-          VER = "${{ steps.bump_dry.outputs.new_tag }}"
+          VER = "${{ steps.bump.outputs.new_tag }}"
           EOF
           git add -f "$FILE_NAME"
-          git commit -m "Commit ver ${{ steps.bump_dry.outputs.new_tag }}"
-          git tag -a "${{ steps.bump_dry.outputs.new_tag }}
+          git commit -m "Commit ver ${{ steps.bump.outputs.new_tag }}"
+          git tag -a "${{ steps.bump.outputs.new_tag }}
           git push
           git push --tags
 
       - name: Draft new release
-        run: gh release create "${{ steps.bump_dry.outputs.new_tag }}" --generate-notes --draft
+        run: gh release create "${{ steps.bump.outputs.new_tag }}" --generate-notes --draft
 
