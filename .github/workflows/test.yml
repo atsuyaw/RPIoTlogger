@@ -13,10 +13,51 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  formatter:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install autoflake black isort yamlfixer-opt-nc
+          if [ -f requirements-test.txt ]; then pip install -r ./.github/requirements-test.txt; fi
+      - name: autoflake
+        run: |
+          autoflake \
+          --check-diff \
+          --in-place \
+          --remove-all-unused-imports \
+          --remove-unused-variables \
+          --recursive .
+      - run: black .
+      - run: isort .
+      - name: yamlfixer
+        run: |
+          yamlfixer \
+          --summary \
+          --config-file ./.github/.yamllint \
+          --recurse 3 .
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
+          commit-message: 'style: format codes'
+          branch: patch/${{ github.ref_name }}
+  build:
+    runs-on: ubuntu-latest
+    needs: formatter
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -40,32 +81,4 @@ jobs:
       - name: Test built package
         run: |
           twine check dist/*
-
-  autoflake:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: creyD/autoflake_action@v1.1
-        with:
-          options: --in-place --remove-all-unused-imports --remove-unused-variables -r
-
-  formatter:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: psf/black@stable
-        with:
-          options: "--diff"
-      - uses: isort/isort-action@v1
-        with:
-          configuration: "--diff"
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Apply Code Formatter Change
 
