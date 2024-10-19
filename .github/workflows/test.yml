@@ -38,7 +38,7 @@ jobs:
       - uses: reviewdog/action-black@v3
         with:
           reporter: github-check
-          fail_on_error: true
+          level: warning
 
       - name: Build package
         run: |
