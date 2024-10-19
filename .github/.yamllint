@@ -9,4 +9,4 @@ ignore:
 rules:
   line-length:
     level: warning
-
+  document-start: disable
