@@ -33,7 +33,6 @@ setup(
     # keywords='',
     package_dir={"": "src"},
     project_urls={
-        # 'Bug Reports': '',
         "Repository": "https://github.com/atsuyaw/RPIoTlogger",
     },
     license="MIT",
