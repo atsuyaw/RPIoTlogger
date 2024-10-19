@@ -1,12 +1,12 @@
 import urequests
-from config import *
 from blink import *
+from config import *
 
-ENDPOINT = f'{REMOTE}/api/v2/write?orgID={ORG_ID}&bucket={BUCKET}'
+ENDPOINT = f"{REMOTE}/api/v2/write?orgID={ORG_ID}&bucket={BUCKET}"
 headers = {
-        "Authorization": f"Token {ACCESS_TOKEN}",
-        "Content-Type": "text/plain; charset=utf-8",
-        "Accept": "application/json"
+    "Authorization": f"Token {ACCESS_TOKEN}",
+    "Content-Type": "text/plain; charset=utf-8",
+    "Accept": "application/json",
 }
 
 # set debug True or False
@@ -16,7 +16,9 @@ debug = True
 def postAPI(HOST, DATUM):
     BODY = f"{HOST} {DATUM}"
     print(BODY)
-    response = urequests.post(ENDPOINT, headers=headers, data=f'{BODY}')#  API POST postAPI('temp',HOST','temp=35')
+    response = urequests.post(
+        ENDPOINT, headers=headers, data=f"{BODY}"
+    )  #  API POST postAPI('temp',HOST','temp=35')
     if response.status_code == 204:
         print("Data posted successfully")
         response.close()
@@ -28,4 +30,3 @@ def postAPI(HOST, DATUM):
         response.close()
         blink(10, 0.5)
     return BODY
-

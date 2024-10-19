@@ -1,2 +1,4 @@
-config.py
+.python-version
+.venv/
+__pycache__/
 
