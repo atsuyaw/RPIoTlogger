@@ -12,6 +12,10 @@ name: Prepare release branch
           - "#minor"
           - "#patch"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   TZ: "Asia/Tokyo"
   FILE_NAME: "./RPIoTlogger/version.py"
@@ -22,12 +26,6 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email \
-          "41898282+github-actions[bot]@users.noreply.github.com"
-
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -36,11 +34,8 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          pip install setuptools
-          if [ -f ./.github/release.requirements.txt ]; \
-            then pip install \
-            -r ./.github/release.requirements.txt; \
-          fi
+          pip install --upgrade pip
+          pip install -r ./.github/release.requirements.txt
 
       - name: Determine next version
         uses: hrzn/github-tag-action@master

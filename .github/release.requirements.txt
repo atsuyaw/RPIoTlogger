@@ -1,3 +1,3 @@
-micropython-package-template
-setup2upypackage
+setup2upypackage>=0.5.0,<1.0.0
+setuptools>=75.2.0,<76.0.0
 
