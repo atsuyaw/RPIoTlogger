@@ -12,7 +12,7 @@ here = Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 # load elements of version.py
-exec(open(here / 'RPIoTlogger' / 'version.py').read())
+exec(open(here / 'src' / 'RPIoTlogger' / 'version.py').read())
 
 setup(
     name='RPIoTlogger',
@@ -29,12 +29,13 @@ setup(
         'Programming Language :: Python :: Implementation :: MicroPython',
     ],
     # keywords='',
+    package_dir={'src'},
     project_urls={
         # 'Bug Reports': '',
         'Repository': 'https://github.com/atsuyaw/RPIoTlogger',
     },
     license='MIT',
     cmdclass={'sdist': sdist_upip.sdist},
-    packages=['RPIoTlogger'],
-    install_requires=[]
+    packages=setup.find_packages(where='src'),
+    install_requires=['onewire']
 )
