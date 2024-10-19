@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 # based on: https://github.com/brainelectronics/micropython-package-template
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from pathlib import Path
 import sdist_upip
 
@@ -29,13 +29,13 @@ setup(
         'Programming Language :: Python :: Implementation :: MicroPython',
     ],
     # keywords='',
-    package_dir={'src'},
+    package_dir={'' : 'src'},
     project_urls={
         # 'Bug Reports': '',
         'Repository': 'https://github.com/atsuyaw/RPIoTlogger',
     },
     license='MIT',
     cmdclass={'sdist': sdist_upip.sdist},
-    packages=setup.find_packages(where='src'),
-    install_requires=['onewire']
+    packages=find_packages(where='src'),
+    install_requires=['onewire'],
 )

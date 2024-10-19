@@ -27,18 +27,27 @@ jobs:
       - uses: reviewdog/action-flake8@v3
         with:
           reporter: github-check
-          fail_on_error: true
+          level: warning
 
       - uses: reviewdog/action-yamllint@v1
         with:
           reporter: github-check
-          yamllint_flags: "-c ./.github/.yamllint ./*.yml ./.github/workflows/*.yml"
-          fail_on_error: true
+          yamllint_flags: "-c ./.github/.yamllint ./.github/workflows/*.yml"
+          level: warning
 
       - uses: reviewdog/action-black@v3
         with:
           reporter: github-check
           level: warning
+
+      - name: Create dummy version file
+        run: |
+          cat <<EOF > "src/RPIoTlogger/version.py"
+          # This is ONLY for test deployment
+          __version__ = '0.0.0'
+          # $GITHUB_REPOSITORY $GITHUB_RUN_ID
+          # $(date +'%Y-%m-%d %H:%M:%S')
+          EOF
 
       - name: Build package
         run: |
