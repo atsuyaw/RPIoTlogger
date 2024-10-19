@@ -1,0 +1,12 @@
+---
+
+extends: default
+
+ignore:
+  - .tox
+  - .venv
+
+rules:
+  line-length:
+    level: warning
+

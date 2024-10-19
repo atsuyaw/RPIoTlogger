@@ -23,12 +23,24 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
       - name: Setup Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/checkout@v4
+        with:
+          # all history is needed to crawl it properly
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install setuptools
+          if [ -f requirements-deploy.txt ]; then pip install -r ./.github/requirements-deploy.txt; fi
 
       - name: Determine next version
         uses: hrzn/github-tag-action@master
@@ -37,6 +49,9 @@ jobs:
           DRY_RUN: true
           WITH_V: true
           BUMP_TYPE: ${{ github.event.inputs.bump_type }}
+
+      - name: Build
+        run: python setup.py sdist
 
       - name: Commit new ver
         run: |
@@ -48,19 +63,25 @@ jobs:
           # $GITHUB_REPOSITORY $GITHUB_RUN_ID
           # $(date +'%Y-%m-%d %H:%M:%S')
           EOF
-          git add -f "$FILE_NAME"
+
+      - name: Update package.json
+        run: |
+          upy-package \
+          --setup_file ./setup.py \
+          --package_file ./RPIoTlogger/package.json \
+          --create \
+          --print \
+          --pretty
+
+      - name: Push
+        run: |
+          git add -A
           git commit -m "Commit ver ${{ steps.bump.outputs.new_tag }}"
-          # git tag -a "${{ steps.bump.outputs.new_tag }}
           git push
-          # git push --tags
 
       - name: Create PR
         run: |
-          gh pr create 
-          -B 'release'
-          -H 'release/${{ steps.bump.outputs.new_tag }}'
+          gh pr create \
+          --base 'main' \
           --title 'Release ${{ steps.bump.outputs.new_tag }}' 
-          --body 'Created by Github action'
 
-#      - name: Draft new release
-#        run: gh release create "${{ steps.bump.outputs.new_tag }}" --generate-notes --draft
