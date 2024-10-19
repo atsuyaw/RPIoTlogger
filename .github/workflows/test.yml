@@ -1,45 +1,30 @@
 name: Test Python package
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - "main"
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install flake8 twine setuptools black
+          pip install --upgrade pip
+          pip install twine setuptools
           if [ -f requirements-test.txt ]; then pip install -r ./.github/requirements-test.txt; fi
-
-      - uses: reviewdog/action-flake8@v3
-        with:
-          reporter: github-check
-          level: warning
-
-      - uses: reviewdog/action-yamllint@v1
-        with:
-          reporter: github-check
-          yamllint_flags: "-c ./.github/.yamllint ./.github/workflows/*.yml"
-          level: warning
-
-      - uses: reviewdog/action-black@v3
-        with:
-          reporter: github-check
-          level: warning
-
       - name: Create dummy version file
         run: |
           cat <<EOF > "src/RPIoTlogger/version.py"
@@ -48,13 +33,39 @@ jobs:
           # $GITHUB_REPOSITORY $GITHUB_RUN_ID
           # $(date +'%Y-%m-%d %H:%M:%S')
           EOF
-
       - name: Build package
         run: |
           python setup.py sdist
           rm dist/*.orig
-
       - name: Test built package
         run: |
           twine check dist/*
+
+  autoflake:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: creyD/autoflake_action@v1.1
+        with:
+          options: --in-place --remove-all-unused-imports --remove-unused-variables -r
+
+  formatter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: psf/black@stable
+        with:
+          options: "--diff"
+      - uses: isort/isort-action@v1
+        with:
+          configuration: "--diff"
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply Code Formatter Change
 
