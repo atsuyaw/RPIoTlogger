@@ -2,7 +2,7 @@ import machine
 import utime
 
 
-def getRawV(PIN,VMAX):
+def getRawV(PIN, VMAX):
     VIN = machine.ADC(PIN)
     conversion_factor = VMAX / 65535
     result = []
@@ -20,4 +20,3 @@ def aveRawV(PIN, VMAX):
     avg = sum(list) / len(list)
     # print(avg)
     return avg
-

@@ -19,16 +19,15 @@
 #  * Recompressing gzip archive with 4K dictionary size so it can be
 #    installed even on low-heap targets.
 #
-import sys
-import os
-import zlib
-import tarfile
-import re
 import io
-
+import os
+import re
+import sys
+import tarfile
+import zlib
 from distutils.filelist import FileList
-from setuptools.command.sdist import sdist as _sdist
 
+from setuptools.command.sdist import sdist as _sdist
 
 FILTERS = [
     # include, exclude, repeat

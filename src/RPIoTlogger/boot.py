@@ -1,8 +1,8 @@
 # https://qiita.com/smart_agri_lab/items/0a63b7cf0ad71e2015ba
 import network
 import ubinascii
-from config import *
 from blink import *
+from config import *
 
 wlan = network.WLAN(network.STA_IF)
 
@@ -18,7 +18,7 @@ def connect():
     IP = wlan.ifconfig()[0]
     # return ip
     # print(f'IP: {ip}')
-    print('Hello world')
+    print("Hello world")
     blink(3, 0.5)
     return IP
 
@@ -29,7 +29,6 @@ def setHost():
 
 
 def getMac():
-    rawMac = wlan.config('mac')
-    MAC = str(ubinascii.hexlify(rawMac),'utf-8')
+    rawMac = wlan.config("mac")
+    MAC = str(ubinascii.hexlify(rawMac), "utf-8")
     return MAC
-
