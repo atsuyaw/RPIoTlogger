@@ -11,7 +11,6 @@ from intTemp import *
 from OneTemp import *
 from rawADC import *
 from postAPI import *
-import network
 
 print('IP: ' + connect())
 MAC = getMac()
