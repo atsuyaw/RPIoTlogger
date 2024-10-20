@@ -22,15 +22,16 @@ jobs:
           pip install --upgrade pip
           pip install -r ./.github/release.requirements.txt
           pip install -r ./.github/test.requirements.txt
-      - name: autoflake
+      - name: Run autoflake
         run: |
           autoflake \
           --in-place \
           --remove-all-unused-imports \
           --remove-unused-variables \
           --recursive .
+      - name: Run isort
+        run: isort --profile black .
       - run: black .
-      - run: isort .
       - uses: peter-evans/create-pull-request@v7
         with:
           author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
