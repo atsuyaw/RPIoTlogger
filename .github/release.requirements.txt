@@ -1,0 +1,4 @@
+setup2upypackage>=0.5.0,<1.0.0
+setuptools>=75.2.0,<76.0.0
+twine>=5.1.1,<6.0.0
+

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-# based on: https://github.com/brainelectronics/micropython-package-template
 
 from pathlib import Path
 
@@ -33,7 +32,6 @@ setup(
     # keywords='',
     package_dir={"": "src"},
     project_urls={
-        # 'Bug Reports': '',
         "Repository": "https://github.com/atsuyaw/RPIoTlogger",
     },
     license="MIT",
