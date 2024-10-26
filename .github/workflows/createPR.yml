@@ -19,7 +19,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "cnt=$(gh pr list -B main -H ${{ github.ref_name }} | wc -l)" \
+          echo "cnt=$(gh pr list -B develop -H ${{ github.ref_name }} | wc -l)" \
             >> $GITHUB_OUTPUT
       - name: Create PR
         if: steps.existPR.outputs.cnt == 0
