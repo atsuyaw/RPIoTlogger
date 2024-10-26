@@ -1,0 +1,34 @@
+name: Create Pull-request
+
+"on":
+  push:
+    branches-ignore:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  createPR:
+    runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check exist PR
+        id: existPR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "cnt=$(gh pr list -B main -H ${{ github.ref_name }} | wc -l)" \
+            >> $GITHUB_OUTPUT
+      - name: Create PR
+        if: steps.existPR.outputs.cnt == 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base "main" \
+            --head "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --body "" \
+            --draft
