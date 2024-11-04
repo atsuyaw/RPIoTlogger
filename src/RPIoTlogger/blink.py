@@ -1,4 +1,5 @@
 import time
+
 import machine
 
 LED = machine.Pin("LED", machine.Pin.OUT)

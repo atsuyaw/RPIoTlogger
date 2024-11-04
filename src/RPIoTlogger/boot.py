@@ -1,7 +1,9 @@
 # boot.py - - runs on boot-up
 import network
 import ubinascii
+from blink import *
 from config import *
+
 # SSID =
 # PASSWORD =
 # HOSTNAME =
@@ -10,7 +12,6 @@ from config import *
 # BUCKET =
 # ACCESS_TOKEN =
 
-from blink import *
 
 wlan = network.WLAN(network.STA_IF)
 

@@ -1,11 +1,12 @@
-import ds18x20
-import onewire
 import time
+
+import ds18x20
 import machine
+import onewire
 import requests
 from blink import *
-
 from config import *
+
 # SSID =
 # PASSWORD =
 # HOSTNAME =
@@ -32,7 +33,6 @@ def aveRawV(PIN, VMAX):
     return avg
 
 
-
 sensor_temp = machine.ADC(4)
 conversion_factor = 3.3 / (65535)
 
@@ -54,7 +54,6 @@ def aveIntTemp():
     avg = sum(list) / len(list)
     # print("avg: " + str(avg))
     return avg
-
 
 
 def getOneTemp(PIN):
@@ -81,8 +80,6 @@ def aveOneTemp(PIN):
     avg = sum(list) / len(list)
     # print("avg: " + str(avg))
     return avg
-
-
 
 
 ENDPOINT = f"{REMOTE}/api/v2/write?orgID={ORG_ID}&bucket={BUCKET}"
@@ -113,8 +110,6 @@ def postAPI(HOST, DATUM):
         response.close()
         blink(10, 0.5)
     return BODY
-
-
 
 
 while True:
