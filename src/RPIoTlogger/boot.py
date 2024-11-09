@@ -7,7 +7,7 @@ import network
 
 import config
 # class Config:
-    AP = {"Wokwi-GUEST": "PW"}
+#    AP = {"Wokwi-GUEST": "PW"}
 
 
 # class Remote:
