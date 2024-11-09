@@ -1,44 +1,78 @@
-# boot.py - - runs on boot-up
 import network
-import ubinascii
-from blink import *
-from config import *
+import time
+import machine
+import binascii
 
-# SSID =
-# PASSWORD =
-# HOSTNAME =
-# REMOTE =
-# ORG_ID =
-# BUCKET =
-# ACCESS_TOKEN =
+# import config
+class Config:
+    AP = {
+        "Wokwi-GUEST": "PW"
+    }
 
+# class Remote:
+#     ENDPOINT =
+#     ORG_ID =
+#     BUCKET =
+#     ACCESS_TOKEN =
 
-wlan = network.WLAN(network.STA_IF)
-
-
-def connect():
-    wlan.active(True)
-    wlan.connect(SSID, PASSWORD)
-
-    while not wlan.isconnected() and wlan.status() >= 0:
-        print("Waiting to connect:")
-        blink(5, 0.05)
-        time.sleep(5)
-    IP = wlan.ifconfig()[0]
-    blink(3, 0.5)
-    return IP
+nic = network.WLAN(network.STA_IF)
+nic.active(True)
 
 
-def setHost():
-    host = network.hostname(HOSTNAME)
-    return host
+print("Found APs:")
+print("ssid, bssid, channel, RSSI, security, hidden")
+time.sleep(.1)
+
+def wlan_scan(_nic):
+    # found_ap = nic.scan()
+    found_ap = sorted(
+        _nic.scan(),
+        key = lambda _ap: _ap[3],# RSSI
+        reverse = True
+    )
+
+    for i in found_ap:
+        # print(i[0].decode())
+        print(i)
+        time.sleep(.1)
+
+wlan_scan(nic)
 
 
-def getMac():
-    rawMac = wlan.config("mac")
-    MAC = str(ubinascii.hexlify(rawMac), "utf-8")
-    return MAC
+interval = 0.5
+delay = 0
+time_limit = 5.0
+
+for _ap in Config.AP:
+    print("Connecting to", _ap, end="")
+    _pw = Config.AP[_ap]
+    nic.connect(_ap,_pw)
+    
+    while not nic.isconnected() and nic.status() >= 0:
+        print(".", end="")
+        # blink(5, 0.05)# Connecting...TODO
+        time.sleep(interval)
+        delay += interval
+
+        if delay > time_limit:
+            nic.disconnect()
+            raise TimeoutError
+
+# if nic.isconnected():
+# blink(3, 0.5)# Connected TODO
+print("Connected:", nic.status())
 
 
-connect()
-MAC = getMac()
+
+print(network.hostname())
+
+uid = machine.unique_id()
+print(str(binascii.hexlify(uid), "utf-8"))
+
+def get_mac():
+    _raw_mac = nic.config("mac")
+    _mac = str(binascii.hexlify(_raw_mac), "utf-8")
+    return _mac
+
+get_mac()# TODO: rm later
+

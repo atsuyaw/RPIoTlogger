@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-pi-pico-w", "id": "pico", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -2.67,
+      "left": -65.33,
+      "attrs": { "color": "red" }
+    }
+  ],
+  "connections": [ [ "led1:A", "pico:GP5", "green", [ "v0" ] ], [ "pico:GND.2", "led1:C", "black", [ "h0" ] ] ],
+  "dependencies": {}
+}
