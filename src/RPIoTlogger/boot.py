@@ -42,9 +42,9 @@ interval = 0.5
 delay = 0
 time_limit = 5.0
 
-for _ap in Config.AP:
+for _ap in config.AP:
     print("Connecting to", _ap, end="")
-    _pw = Config.AP[_ap]
+    _pw = config.AP[_ap]
     nic.connect(_ap, _pw)
 
     while not nic.isconnected() and nic.status() >= 0:
