@@ -5,8 +5,8 @@ import machine
 import network
 
 
-# import config
-class Config:
+import config
+# class Config:
     AP = {"Wokwi-GUEST": "PW"}
 
 
