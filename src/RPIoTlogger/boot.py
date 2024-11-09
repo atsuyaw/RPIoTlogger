@@ -1,11 +1,10 @@
 import binascii
 import time
 
+import config
 import machine
 import network
 
-
-import config
 # class Config:
 #    AP = {"Wokwi-GUEST": "PW"}
 
