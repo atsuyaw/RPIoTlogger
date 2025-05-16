@@ -1,22 +1,22 @@
 import machine
 import utime
 
-
-def getRawV(PIN, VMAX):
+def getRawV(PIN,COEFF,SHIFT):
     VIN = machine.ADC(PIN)
-    conversion_factor = VMAX / 65535
+    CONV = 1 / 65535
     result = []
-    for i in range(10):
-        RAWV = VIN.read_u16() * conversion_factor
+    for i in range(100):
+        RAWV = VIN.read_u16() * CONV * COEFF + SHIFT
         # print(RAWV)
         utime.sleep_ms(10)
         result.append(RAWV)
     return result
 
 
-def aveRawV(PIN, VMAX):
-    list = getRawV(PIN, VMAX)
-    # print(list)
-    avg = sum(list) / len(list)
-    # print(avg)
-    return avg
+def aveRawV(PIN,COEFF,SHIFT):
+    try:
+        list = getRawV(PIN,COEFF,SHIFT)
+        avg = sum(list) / len(list)
+        return avg
+    except IndexError:
+        return 0
