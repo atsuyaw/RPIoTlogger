@@ -32,8 +32,7 @@ def getOneTemp(PIN):
 def aveOneTemp(PIN):
     try:
         list = getOneTemp(PIN)
-        print(list)
         avg = sum(list) / len(list)
         return avg
     except IndexError:
-        return '\"\"'
+        return -273.15

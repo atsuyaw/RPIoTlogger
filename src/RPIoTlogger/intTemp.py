@@ -20,7 +20,5 @@ def get_sensor_temp():
 
 def aveIntTemp():
     list = get_sensor_temp()
-    print(list)
     avg = sum(list) / len(list)
-    # print("avg: " + str(avg))
     return avg

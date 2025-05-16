@@ -39,16 +39,16 @@ while True:
     ADC_VOL_PIN = 0
     COEFF_VOL = 81.331
     SHIFT_VOL = 0.1398
-    VOL = aveRawV(ADC_VOL_PIN,COEFF_E,SHIFT_E)
+    VOL = aveRawV(ADC_VOL_PIN,COEFF_VOL,SHIFT_VOL)
     ONE_TEMP_PIN = 12
     ONE_TEMP = aveOneTemp(ONE_TEMP_PIN)
     WEIGHT = hx.get_value()
     DATUM = f'int_temp={INT_TEMP},'\
             + f'one_temp={ONE_TEMP},'\
-            + f'current={CUR}'\
+            + f'current={CUR},'\
             + f'voltage={VOL},'\
             + f'weight={WEIGHT},'\
-            + f'app={APP},'\
-            + f'ver={VER}'
+            + f'app="{APP}",'\
+            + f'ver="{VER}"'
     postAPI(MAC, DATUM)
     utime.sleep(30)

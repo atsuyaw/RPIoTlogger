@@ -14,9 +14,9 @@ def getRawV(PIN,COEFF,SHIFT):
 
 
 def aveRawV(PIN,COEFF,SHIFT):
-    Try:
+    try:
         list = getRawV(PIN,COEFF,SHIFT)
         avg = sum(list) / len(list)
         return avg
     except IndexError:
-        return '\"\"'
+        return 0
