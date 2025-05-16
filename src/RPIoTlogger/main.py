@@ -1,3 +1,6 @@
+APP = 'RPIoTlogger'
+VER = '0.2.0'
+#
 from config import *
 from intTemp import *
 from OneTemp import *
@@ -18,22 +21,21 @@ MAC = getMac()
 
 while True:
     INT_TEMP = aveIntTemp()
-    RAW_V_PIN = 0
-    RAW_VMAX = 41.6  #  Conversion factor for ADC0
-    RAW_V = aveRawV(RAW_V_PIN, RAW_VMAX)
-    RAW_VB_PIN = 1
-    RAW_VB_MAX = 1.21  #  Conversion factor for ADC1
-    RAW_VB = aveRawV(RAW_VB_PIN, RAW_VB_MAX)
+    ADC_CUR_PIN = 1
+    COEFF_CUR = 6.7625
+    SHIFT_CUR = 0.0118
+    CUR = aveRawV(ADC_CUR_PIN,COEFF_CUR,SHIFT_CUR)
+    ADC_VOL_PIN = 0
+    COEFF_VOL = 81.331
+    SHIFT_VOL = 0.1398
+    VOL = aveRawV(ADC_VOL_PIN,COEFF_VOL,SHIFT_VOL)
     ONE_TEMP_PIN = 12
     ONE_TEMP = aveOneTemp(ONE_TEMP_PIN)
-    DATUM = (
-        f"int_temp={INT_TEMP},"
-        + f"one_temp={ONE_TEMP},"
-        + f"voltage={RAW_V},"
-        + f"rawVmax={RAW_VMAX},"
-        + f"current={RAW_VB},"
-        + f"rawVBmax={RAW_VB_MAX},"
-        + f"ver={VER}"
-    )
+    DATUM = f'int_temp={INT_TEMP},'\
+            + f'one_temp={ONE_TEMP},'\
+            + f'current={CUR},'\
+            + f'voltage={VOL},'\
+            + f'app="{APP}",'\
+            + f'ver="{VER}"'
     postAPI(MAC, DATUM)
-    utime.sleep(60)
+    utime.sleep(30)
