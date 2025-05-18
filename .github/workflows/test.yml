@@ -1,6 +1,10 @@
 name: Test Python package
 
-"on": push
+"on":
+  push:
+    branches-ignore:
+      - patch/*
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
