@@ -1,22 +1,12 @@
-APP = "RPIoTlogger"
-VER = "0.2.0"
-#
-from config import *
 from hx711 import *
 from intTemp import *
-
-# SSID =
-# PASSWORD =
-# HOSTNAME =
-# REMOTE =
-# ORG_ID =
-# BUCKET =
-# ACCESS_TOKEN =
 from machine import Pin
 from OneTemp import *
 from postAPI import *
+from secrets import *
 from rawADC import *
 from wifi import *
+from version import *
 
 print("IP: " + connect())
 MAC = getMac()
@@ -48,8 +38,8 @@ while True:
         + f"current={CUR},"
         + f"voltage={VOL},"
         + f"weight={WEIGHT},"
-        + f'app="{APP}",'
-        + f'ver="{VER}"'
+        + f'app="{__app__}",'
+        + f'ver="{__version__}"'
     )
     postAPI(MAC, DATUM)
     utime.sleep(30)
