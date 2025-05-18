@@ -1,12 +1,13 @@
+from secrets import *
+
 from hx711 import *
 from intTemp import *
 from machine import Pin
 from OneTemp import *
 from postAPI import *
-from secrets import *
 from rawADC import *
-from wifi import *
 from version import *
+from wifi import *
 
 print("IP: " + connect())
 MAC = getMac()
