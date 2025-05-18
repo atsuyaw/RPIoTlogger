@@ -1,7 +1,8 @@
 import machine
 import utime
 
-def getRawV(PIN,COEFF,SHIFT):
+
+def getRawV(PIN, COEFF, SHIFT):
     VIN = machine.ADC(PIN)
     CONV = 1 / 65535
     result = []
@@ -13,9 +14,9 @@ def getRawV(PIN,COEFF,SHIFT):
     return result
 
 
-def aveRawV(PIN,COEFF,SHIFT):
+def aveRawV(PIN, COEFF, SHIFT):
     try:
-        list = getRawV(PIN,COEFF,SHIFT)
+        list = getRawV(PIN, COEFF, SHIFT)
         avg = sum(list) / len(list)
         return avg
     except IndexError:
