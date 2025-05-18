@@ -1,11 +1,9 @@
-APP = 'RPIoTlogger'
-VER = '0.2.0'
+APP = "RPIoTlogger"
+VER = "0.2.0"
 #
 from config import *
+from hx711 import *
 from intTemp import *
-from OneTemp import *
-from postAPI import *
-from rawADC import *
 
 # SSID =
 # PASSWORD =
@@ -15,8 +13,9 @@ from rawADC import *
 # BUCKET =
 # ACCESS_TOKEN =
 from machine import Pin
-from hx711 import *
-import time
+from OneTemp import *
+from postAPI import *
+from rawADC import *
 from wifi import *
 
 print("IP: " + connect())
@@ -35,20 +34,22 @@ while True:
     ADC_CUR_PIN = 1
     COEFF_CUR = 6.7625
     SHIFT_CUR = 0.0118
-    CUR = aveRawV(ADC_CUR_PIN,COEFF_CUR,SHIFT_CUR)
+    CUR = aveRawV(ADC_CUR_PIN, COEFF_CUR, SHIFT_CUR)
     ADC_VOL_PIN = 0
     COEFF_VOL = 81.331
     SHIFT_VOL = 0.1398
-    VOL = aveRawV(ADC_VOL_PIN,COEFF_VOL,SHIFT_VOL)
+    VOL = aveRawV(ADC_VOL_PIN, COEFF_VOL, SHIFT_VOL)
     ONE_TEMP_PIN = 12
     ONE_TEMP = aveOneTemp(ONE_TEMP_PIN)
     WEIGHT = hx.get_value()
-    DATUM = f'int_temp={INT_TEMP},'\
-            + f'one_temp={ONE_TEMP},'\
-            + f'current={CUR},'\
-            + f'voltage={VOL},'\
-            + f'weight={WEIGHT},'\
-            + f'app="{APP}",'\
-            + f'ver="{VER}"'
+    DATUM = (
+        f"int_temp={INT_TEMP},"
+        + f"one_temp={ONE_TEMP},"
+        + f"current={CUR},"
+        + f"voltage={VOL},"
+        + f"weight={WEIGHT},"
+        + f'app="{APP}",'
+        + f'ver="{VER}"'
+    )
     postAPI(MAC, DATUM)
     utime.sleep(30)
