@@ -75,7 +75,7 @@ jobs:
             github-actions[bot]
             <41898282+github-actions[bot]@users.noreply.github.com>
           commit-message: >-
-            feat: Write new version ${{ step.bump.outputs.new_tag }}
+            feat: Write new version ${{ steps.bump.outputs.new_tag }}
           branch: "release/${{ steps.bump.outputs.new_tag }}"
           base: "main"
           title: "Release ${{ steps.bump.outputs.new_tag }}"
