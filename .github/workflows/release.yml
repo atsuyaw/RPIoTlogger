@@ -45,9 +45,6 @@ jobs:
           WITH_V: true
           BUMP_TYPE: ${{ github.event.inputs.bump_type }}
 
-      - name: Build
-        run: python setup.py sdist
-
       - name: Create new ver file
         run: |
           cat <<EOF > "$FILE_NAME"
@@ -58,6 +55,9 @@ jobs:
           # Run id: $GITHUB_RUN_ID
           # $(date +'%Y-%m-%d %H:%M:%S')
           EOF
+
+      - name: Build
+        run: python setup.py sdist
 
       - name: Update package.json
         run: |
