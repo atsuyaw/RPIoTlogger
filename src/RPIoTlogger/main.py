@@ -1,16 +1,17 @@
-from secrets import *
-import machine
-# from version import *
-import network
-import ubinascii
-from secrets import *
 # from blink import *
 import time
-import requests
+from secrets import *
 
-int_led = machine.Pin(25,machine.Pin.OUT)
-led1 = machine.Pin(2,machine.Pin.OUT)
-led2 = machine.Pin(3,machine.Pin.OUT)
+import machine
+
+# from version import *
+import network
+import requests
+import ubinascii
+
+int_led = machine.Pin(25, machine.Pin.OUT)
+led1 = machine.Pin(2, machine.Pin.OUT)
+led2 = machine.Pin(3, machine.Pin.OUT)
 sw1 = machine.Pin(10, machine.Pin.IN, machine.Pin.PULL_UP)
 
 int_led.on()
@@ -18,10 +19,11 @@ led1.off()
 led2.off()
 
 
-def blink(led,sig,dur):
-    for i in range(2*sig):
+def blink(led, sig, dur):
+    for i in range(2 * sig):
         led.toggle()
         time.sleep(dur)
+
 
 wlan = network.WLAN(network.STA_IF)
 
@@ -39,32 +41,39 @@ def connect():
     print(IP)
     return IP
 
+
 def getMac():
-    rawMac = wlan.config('mac')
-    MAC = str(ubinascii.hexlify(rawMac),'utf-8')
+    rawMac = wlan.config("mac")
+    MAC = str(ubinascii.hexlify(rawMac), "utf-8")
     return MAC
+
 
 MAC = getMac()
 
 while not wlan.isconnected():
     connect()
     time.sleep(5)
-    
+
 led1.on()
 
 led2.on()
 import mip
-mip.install("https://raw.githubusercontent.com/endail/hx711-pico-mpy/refs/heads/main/src/hx711.py")
+
+mip.install(
+    "https://raw.githubusercontent.com/endail/hx711-pico-mpy/refs/heads/main/src/hx711.py"
+)
 led2.off()
 
 from hx711 import *
-hx = hx711(machine.Pin(18) ,machine.Pin(19))
+
+hx = hx711(machine.Pin(18), machine.Pin(19))
 hx.set_power(hx711.power.pwr_up)
 hx.set_gain(hx711.gain.gain_128)
 hx.set_power(hx711.power.pwr_down)
 hx711.wait_power_down()
 hx.set_power(hx711.power.pwr_up)
 hx711.wait_settle(hx711.rate.rate_10)
+
 
 def get_raw_hx():
     raw_hx = hx.get_value()
@@ -73,10 +82,12 @@ def get_raw_hx():
     if raw_hx := hx.get_value_noblock():
         return raw_hx
 
+
 def hx_kg(ins):
     ins = get_raw_hx()
     weight_kg = (ins * 0.00186277 + 1008.6124) / 1000
     return weight_kg
+
 
 # >>> hxa = get_raw_hx()
 # >>> hx_kg(hxa)
@@ -110,6 +121,7 @@ import onewire
 
 one_temp = machine.Pin(22)
 
+
 def get_one_temp(ins):
     ow = onewire.OneWire(ins)  #  1-Wire path
     ds = ds18x20.DS18X20(ow)  #  ds18x20 class instance
@@ -130,7 +142,9 @@ def get_one_temp(ins):
     except IndexError:
         pass
 
+
 # got = get_one_temp(one_temp)
+
 
 def get_raw_adc(PIN, COEFF, SHIFT):
     VIN = machine.ADC(PIN)
@@ -143,6 +157,7 @@ def get_raw_adc(PIN, COEFF, SHIFT):
         result.append(RAWV)
     return result
 
+
 ENDPOINT = f"http://{REMOTE}/api/v2/write?orgID={ORG_ID}&bucket={BUCKET}"
 HEADER = {
     "Authorization": f"Token {ACCESS_TOKEN}",
@@ -153,6 +168,7 @@ HEADER = {
 # set debug True or False
 debug = True
 
+
 def post(data):
     body = f"{HOST} {data}"
     print(body)
@@ -160,23 +176,20 @@ def post(data):
         res = requests.post(
             ENDPOINT, headers=HEADER, data=f"{body}"
         )  #  API POST postAPI('temp',HOST','temp=35')
-        if res.status_code >= 400 :
+        if res.status_code >= 400:
             print(res.text)
         code = res.status_code
         res.close()
         return code
     except OSError as e:
-        print(f"OSError: " + f'{e}' )
+        print(f"OSError: " + f"{e}")
         return e
-
-
-
 
 
 while True:
     int_temp = get_int_temp()
     int_temp = ave(int_temp)
-    
+
     ADC_CUR_PIN = 1
     COEFF_CUR = 6.7625
     SHIFT_CUR = 0.0118
@@ -200,4 +213,3 @@ while True:
     postAPI(MAC, data)
     time.sleep(30)
     post(data)
-
