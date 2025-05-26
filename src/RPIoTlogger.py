@@ -5,6 +5,7 @@ from machine import Pin
 from network import WLAN
 from requests import post
 from ubinascii import hexlify
+import hx711
 
 app = "atsuyaw/RPIoTlogger"
 ver = "0.0.1"
@@ -55,16 +56,6 @@ while not wlan.isconnected():
     time.sleep(5)
 
 led1.off()
-
-led2.on()
-try:
-    import hx7111
-except ImportError:
-    import mip
-    mip.install(
-        "https://raw.githubusercontent.com/endail/hx711-pico-mpy/refs/heads/main/src/hx711.py"
-    )
-led2.off()
 
 
 hx = hx711(machine.Pin(18), machine.Pin(19))
