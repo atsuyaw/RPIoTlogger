@@ -1,11 +1,12 @@
 # from blink import *
 import time
+from config import *
 from secrets import *
 
 import machine
 
 # from version import *
-import network
+from network import WLAN
 import requests
 import ubinascii
 
@@ -50,21 +51,22 @@ def getMac():
 
 MAC = getMac()
 
-while not wlan.isconnected():
-    connect()
-    time.sleep(5)
+# while not wlan.isconnected():
+#     connect()
+#     time.sleep(5)
 
-led1.on()
+led1.off()
 
 led2.on()
-import mip
-
-mip.install(
-    "https://raw.githubusercontent.com/endail/hx711-pico-mpy/refs/heads/main/src/hx711.py"
-)
+try:
+    import hx7111
+except ImportError:
+    import mip
+    mip.install(
+        "https://raw.githubusercontent.com/endail/hx711-pico-mpy/refs/heads/main/src/hx711.py"
+    )
 led2.off()
 
-from hx711 import *
 
 hx = hx711(machine.Pin(18), machine.Pin(19))
 hx.set_power(hx711.power.pwr_up)
@@ -83,80 +85,37 @@ def get_raw_hx():
         return raw_hx
 
 
-def hx_kg(ins):
-    ins = get_raw_hx()
-    weight_kg = (ins * 0.00186277 + 1008.6124) / 1000
-    return weight_kg
 
-
-# >>> hxa = get_raw_hx()
-# >>> hx_kg(hxa)
-
-sensor_temp = machine.ADC(4)
-conversion_factor = 3.3 / (65535)
-
-
-def get_int_temp():
-    result = []
-    for i in range(10):
-        reading = sensor_temp.read_u16() * conversion_factor
-        sensorTemp = 27 - (reading - 0.706) / 0.001721
-        print(sensorTemp)
-        time.sleep_ms(10)
-        result.append(sensorTemp)
-    return result
-
-
-def ave(ins):
+def avg(ins, lim, dur):
+    r = []
+    for i in range(lim):
+        r.append(ins)
+        time.sleep(dur)
     try:
-        list = ins
-        avg = sum(list) / len(list)
+        avg = sum(r) / len(r)
         return avg
     except IndexError:
-        return -273.15
+        return
 
 
 import ds18x20
 import onewire
 
-one_temp = machine.Pin(22)
 
-
-def get_one_temp(ins):
+def get_onetemp(ins):
     ow = onewire.OneWire(ins)  #  1-Wire path
     ds = ds18x20.DS18X20(ow)  #  ds18x20 class instance
-    #  get rom code
     roms = ds.scan()  #  64bit roms <class 'list'>
-    print("roms=", roms)
-    try:
-        rom = roms[0]  #  Set [0] because there is only DS18B20 for 1-Wire
-        result = []
-        for i in range(10):
-            temp = ds.convert_temp()  #  Store temp datum in the scratchpad
-            time.sleep(1)
-            temp = ds.read_temp(rom)  #  Get Celsius temp
-            print(temp)
-            time.sleep_ms(10)
-            result.append(temp)
-        return result
-    except IndexError:
-        pass
+    rom = roms[0]  #  Set [0] because there is only DS18B20 for 1-Wire
+    temp = ds.convert_temp()  #  Store temp datum in the scratchpad
+    time.sleep(1)
+    temp = ds.read_temp(rom)  #  Get Celsius temp
+    return temp
 
 
-# got = get_one_temp(one_temp)
-
-
-def get_raw_adc(PIN, COEFF, SHIFT):
-    VIN = machine.ADC(PIN)
-    CONV = 1 / 65535
-    result = []
-    for i in range(100):
-        RAWV = VIN.read_u16() * CONV * COEFF + SHIFT
-        # print(RAWV)
-        time.sleep_ms(10)
-        result.append(RAWV)
-    return result
-
+def meas_adc(ins):
+    volt = ins.read_u16() / 65535 * 3.3
+    return volt
 
 ENDPOINT = f"http://{REMOTE}/api/v2/write?orgID={ORG_ID}&bucket={BUCKET}"
 HEADER = {
@@ -164,9 +123,6 @@ HEADER = {
     "Content-Type": "text/plain; charset=utf-8",
     "Accept": "application/json",
 }
-
-# set debug True or False
-debug = True
 
 
 def post(data):
@@ -180,36 +136,43 @@ def post(data):
             print(res.text)
         code = res.status_code
         res.close()
-        return code
+        raise RuntimeError(code)
     except OSError as e:
         print(f"OSError: " + f"{e}")
         return e
 
+# TODO: Switch for behavior
+# sw1.value() == 1
+
 
 while True:
-    int_temp = get_int_temp()
-    int_temp = ave(int_temp)
-
-    ADC_CUR_PIN = 1
-    COEFF_CUR = 6.7625
-    SHIFT_CUR = 0.0118
-    CUR = aveRawV(ADC_CUR_PIN, COEFF_CUR, SHIFT_CUR)
-    ADC_VOL_PIN = 0
-    COEFF_VOL = 81.331
-    SHIFT_VOL = 0.1398
-    VOL = aveRawV(ADC_VOL_PIN, COEFF_VOL, SHIFT_VOL)
-    ONE_TEMP_PIN = 12
-    ONE_TEMP = aveOneTemp(ONE_TEMP_PIN)
-    WEIGHT = hx.get_value()
+    led2.off()
+    if raw_int_temp := 27 - ( meas_adc(INT_TEMP_PIN) - 0.706 ) / 0.001721:
+        dec_int_temp = "int_temp=" + f"{avg(raw_int_temp, 5, 0.01)},"
+    else:
+        dec_int_temp = ""
+    ph = avg(meas_adc(PH_PIN),5,0.1) * PH_COEFF + PH_BASE
+    dec_ph = "pH=" + f"{ph},"
+    vol = avg(meas_adc(VOL_PIN),5,0.1) / VOL_RES2 * (VOL_RES1 + VOL_RES2) * VOL_MAX
+    dec_vol = "voltage=" + f"{vol},"
+    cur = avg(meas_adc(CUR_PIN),5,0.1) / CUR_RES2 * (CUR_RES1 + CUR_RES2) * CUR_MAX
+    dec_cur = "current=" + f"{cur},"
+    if raw_temp := get_onetemp(ONETEMP_PIN):
+        dec_temp = "temp=" + f"{avg(raw_temp, 5, 0)},"
+    else:
+        dec_temp = ""
+    if raw_weight := ( get_raw_hx() * 0.00186277 + 1008.6124) / 1000:
+        dec_weight = "weight=" + f"{avg(raw_weight,5,0.1)},"
+    else:
+        dec_weight = ""
+    
     data = (
-        f"int_temp={INT_TEMP},"
-        + f"one_temp={ONE_TEMP},"
-        + f"current={CUR},"
-        + f"voltage={VOL},"
-        + f"weight={WEIGHT},"
-        + f'app="{__app__}",'
-        + f'ver="{__version__}"'
+        dec_int_temp + dec_ph + dec_vol + dec_cur + dec_temp + dec_weight
+        + f'APP="{__app__}",'
+        + f'VER="{__version__}"'
     )
-    postAPI(MAC, data)
-    time.sleep(30)
-    post(data)
+    time.sleep(1)
+    try:
+        post(data)
+    except:
+        led2.on()
