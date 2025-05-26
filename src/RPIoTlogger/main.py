@@ -1,14 +1,13 @@
-# from blink import *
-import time
+from time import sleep
 from config import *
 from secrets import *
-
-import machine
-
-# from version import *
+from machine import Pin
 from network import WLAN
-import requests
-import ubinascii
+from requests import post
+from ubinascii import hexlify
+
+app = "atsuyaw/RPIoTlogger"
+ver = "0.0.1"
 
 int_led = machine.Pin(25, machine.Pin.OUT)
 led1 = machine.Pin(2, machine.Pin.OUT)
@@ -51,9 +50,9 @@ def getMac():
 
 MAC = getMac()
 
-# while not wlan.isconnected():
-#     connect()
-#     time.sleep(5)
+while not wlan.isconnected():
+    connect()
+    time.sleep(5)
 
 led1.off()
 
@@ -132,11 +131,15 @@ def post(data):
         res = requests.post(
             ENDPOINT, headers=HEADER, data=f"{body}"
         )  #  API POST postAPI('temp',HOST','temp=35')
-        if res.status_code >= 400:
-            print(res.text)
         code = res.status_code
         res.close()
-        raise RuntimeError(code)
+        if res.status_code >= 400:
+            print(res.text)
+            raise RuntimeError(code)
+        else:
+            return code
+    except RuntimeError as e:
+        return e
     except OSError as e:
         print(f"OSError: " + f"{e}")
         return e
@@ -168,8 +171,8 @@ while True:
     
     data = (
         dec_int_temp + dec_ph + dec_vol + dec_cur + dec_temp + dec_weight
-        + f'APP="{__app__}",'
-        + f'VER="{__version__}"'
+        + f'app="{app}",'
+        + f'ver="{ver}"'
     )
     time.sleep(1)
     try:
