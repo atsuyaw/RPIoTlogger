@@ -1,6 +1,6 @@
 {
     "urls": [
-      ["main.py", "github:atsuyaw/RPIoTlogger/src/main.py"]
+      ["main.py", "github:atsuyaw/RPIoTlogger/src/RPIoTlogger.py"]
     ],
     "deps": [
         ["hx711-pico-mpy/hx711.py", "github:atsuyaw/hx711-pico-mpy/src/hx711.py"]
