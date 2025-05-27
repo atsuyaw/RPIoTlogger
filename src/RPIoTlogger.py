@@ -141,9 +141,9 @@ while True:
         dec_int_temp = ""
     ph = avg(meas_adc(PH_PIN),5,0.1) * PH_COEFF + PH_BASE
     dec_ph = "pH=" + f"{ph},"
-    vol = avg(meas_adc(VOL_PIN),5,0.1) / VOL_RES2 * (VOL_RES1 + VOL_RES2) * VOL_MAX
+    vol = avg(meas_adc(VOL_PIN),5,0.1) * VOL_RES2 / (VOL_RES1 + VOL_RES2) * VOL_MAX
     dec_vol = "voltage=" + f"{vol},"
-    cur = avg(meas_adc(CUR_PIN),5,0.1) / CUR_RES2 * (CUR_RES1 + CUR_RES2) * CUR_MAX
+    cur = avg(meas_adc(CUR_PIN),5,0.1) * CUR_RES2 / (CUR_RES1 + CUR_RES2) * CUR_MAX
     dec_cur = "current=" + f"{cur},"
     if raw_temp := get_onetemp(ONETEMP_PIN):
         dec_temp = "temp=" + f"{avg(raw_temp, 5, 0)},"
@@ -171,4 +171,4 @@ while True:
         led1.on()
         pass
     finally:
-        time.sleep(6)
+        time.sleep(30)
