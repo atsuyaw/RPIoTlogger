@@ -1,7 +1,0 @@
-# SSID =
-# PASSWORD =
-# HOSTNAME =
-# REMOTE =
-# ORG_ID =
-# BUCKET =
-# ACCESS_TOKEN =

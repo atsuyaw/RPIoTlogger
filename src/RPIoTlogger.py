@@ -1,11 +1,10 @@
-from time import sleep
+import time
+import machine
+import network
+import requests
+import ubinascii
+from hx711 import *
 from config import *
-from secrets import *
-from machine import Pin
-from network import WLAN
-from requests import post
-from ubinascii import hexlify
-import hx711
 
 app = "atsuyaw/RPIoTlogger"
 ver = "0.0.1"
@@ -116,30 +115,25 @@ HEADER = {
 
 
 def post(data):
-    body = f"{HOST} {data}"
+    body = f"{MAC} {data}"
     print(body)
-    try:
-        res = requests.post(
-            ENDPOINT, headers=HEADER, data=f"{body}"
-        )  #  API POST postAPI('temp',HOST','temp=35')
-        code = res.status_code
-        res.close()
-        if res.status_code >= 400:
-            print(res.text)
-            raise RuntimeError(code)
-        else:
-            return code
-    except RuntimeError as e:
-        return e
-    except OSError as e:
-        print(f"OSError: " + f"{e}")
-        return e
+    res = requests.post(
+        ENDPOINT, headers=HEADER, data=f"{body}"
+    )  #  API POST postAPI('temp',HOST','temp=35')
+    code = res.status_code
+    text = res.text
+    res.close()
+    if code >= 400:
+        print(text)
+        raise RuntimeError(code)
+    else:
+        return code
 
 # TODO: Switch for behavior
 # sw1.value() == 1
 
-
 while True:
+    led1.off()
     led2.off()
     if raw_int_temp := 27 - ( meas_adc(INT_TEMP_PIN) - 0.706 ) / 0.001721:
         dec_int_temp = "int_temp=" + f"{avg(raw_int_temp, 5, 0.01)},"
@@ -165,8 +159,16 @@ while True:
         + f'app="{app}",'
         + f'ver="{ver}"'
     )
-    time.sleep(1)
     try:
         post(data)
-    except:
         led2.on()
+    except RuntimeError as e:
+        led1.on()
+        print(e)
+        pass
+    except OSError as e:
+        print(f"OSError: " + f"{e}")
+        led1.on()
+        pass
+    finally:
+        time.sleep(6)
