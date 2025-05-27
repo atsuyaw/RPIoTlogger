@@ -17,17 +17,17 @@ VOL_MAX = 36
 CUR_PIN = machine.ADC(26)
 CUR_RES1 = 6.6 # Part Res for vol meas
 CUR_RES2 = 3.3
-CUR_MAX = 3 / 10
+CUR_MAX = 3
 
 ONETEMP_PIN = machine.Pin(22)
 
 # Set secrets
-SSID = ''
-PASSWORD = ''
+SSID = ""
+PASSWORD = ""
 
 # InfluxDB
 REMOTE = ""# Host name and port
-ORG_ID = ''
-BUCKET = ''
-ACCESS_TOKEN = ''
+ORG_ID = ""
+BUCKET = ""
+ACCESS_TOKEN = ""
 
