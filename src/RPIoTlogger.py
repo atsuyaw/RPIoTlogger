@@ -1,9 +1,11 @@
+import binascii
 import time
+
 import machine
 import network
 import requests
-import binascii
 from hx711 import *
+
 from config import *
 
 app = "atsuyaw/RPIoTlogger"
@@ -76,7 +78,6 @@ def get_raw_hx():
         return raw_hx
 
 
-
 def avg(ins, lim, dur):
     r = []
     for i in range(lim):
@@ -108,6 +109,7 @@ def meas_adc(ins):
     volt = ins.read_u16() / 65535 * 3.3
     return volt
 
+
 ENDPOINT = f"http://{REMOTE}/api/v2/write?orgID={ORG_ID}&bucket={BUCKET}"
 HEADER = {
     "Authorization": f"Token {ACCESS_TOKEN}",
@@ -131,33 +133,39 @@ def post(data):
     else:
         return code
 
+
 # TODO: Switch for behavior
 # sw1.value() == 1
 
 while True:
     led1.off()
     led2.off()
-    if raw_int_temp := 27 - ( meas_adc(INT_TEMP_PIN) - 0.706 ) / 0.001721:
+    if raw_int_temp := 27 - (meas_adc(INT_TEMP_PIN) - 0.706) / 0.001721:
         dec_int_temp = "int_temp=" + f"{avg(raw_int_temp, 5, 0.01)},"
     else:
         dec_int_temp = ""
-    ph = avg(meas_adc(PH_PIN),5,0.1) * PH_COEFF + PH_BASE
+    ph = avg(meas_adc(PH_PIN), 5, 0.1) * PH_COEFF + PH_BASE
     dec_ph = "pH=" + f"{ph},"
-    vol = avg(meas_adc(VOL_PIN),5,0.1) * VOL_RES2 / (VOL_RES1 + VOL_RES2) * VOL_MAX
+    vol = avg(meas_adc(VOL_PIN), 5, 0.1) * VOL_RES2 / (VOL_RES1 + VOL_RES2) * VOL_MAX
     dec_vol = "voltage=" + f"{vol},"
-    cur = avg(meas_adc(CUR_PIN),5,0.1) * CUR_RES2 / (CUR_RES1 + CUR_RES2) * CUR_MAX
+    cur = avg(meas_adc(CUR_PIN), 5, 0.1) * CUR_RES2 / (CUR_RES1 + CUR_RES2) * CUR_MAX
     dec_cur = "current=" + f"{cur},"
     if raw_temp := get_onetemp(ONETEMP_PIN):
         dec_temp = "temp=" + f"{avg(raw_temp, 5, 0)},"
     else:
         dec_temp = ""
-    if raw_weight := ( get_raw_hx() * 0.00186277 + 1008.6124) / 1000:
+    if raw_weight := (get_raw_hx() * 0.00186277 + 1008.6124) / 1000:
         dec_weight = "weight=" + f"{avg(raw_weight,5,0.1)},"
     else:
         dec_weight = ""
-    
+
     data = (
-        dec_int_temp + dec_ph + dec_vol + dec_cur + dec_temp + dec_weight
+        dec_int_temp
+        + dec_ph
+        + dec_vol
+        + dec_cur
+        + dec_temp
+        + dec_weight
         # + f'app="{app}",'
         + f'ver="{ver}"'
     )
@@ -167,10 +175,8 @@ while True:
     except RuntimeError as e:
         led1.on()
         print(e)
-        pass
     except OSError as e:
         print(f"OSError: " + f"{e}")
         led1.on()
-        pass
     finally:
         time.sleep(30)
