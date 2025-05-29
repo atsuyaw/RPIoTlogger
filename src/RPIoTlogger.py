@@ -2,7 +2,7 @@ import time
 import machine
 import network
 import requests
-import ubinascii
+import binascii
 from hx711 import *
 from config import *
 
@@ -30,21 +30,23 @@ wlan = network.WLAN(network.STA_IF)
 
 def connect():
     wlan.deinit()
+    time.sleep(5)
     wlan.active(True)
+    time.sleep(5)
     wlan.connect(SSID, PASSWORD)
 
     while not wlan.isconnected() and wlan.status() >= 0:
         blink(led1, 5, 0.1)
         print("Waiting to connect:")
         time.sleep(5)
-    IP = wlan.ifconfig()[0]
-    print(IP)
-    return IP
+    s = wlan.status()
+    print(s)
+    return s
 
 
 def getMac():
     rawMac = wlan.config("mac")
-    MAC = str(ubinascii.hexlify(rawMac), "utf-8")
+    MAC = str(binascii.hexlify(rawMac), "utf-8")
     return MAC
 
 
@@ -156,7 +158,7 @@ while True:
     
     data = (
         dec_int_temp + dec_ph + dec_vol + dec_cur + dec_temp + dec_weight
-        + f'app="{app}",'
+        # + f'app="{app}",'
         + f'ver="{ver}"'
     )
     try:
