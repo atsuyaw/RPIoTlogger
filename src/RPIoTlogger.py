@@ -35,7 +35,7 @@ def connect():
     time.sleep(5)
     wlan.active(True)
     time.sleep(5)
-    wlan.connect(SSID, PASSWORD)
+    wlan.connect(ssid=SSID, key=PASSWORD)
 
     while not wlan.isconnected() and wlan.status() >= 0:
         blink(led1, 5, 0.1)
@@ -98,12 +98,14 @@ def get_onetemp(ins):
     ow = onewire.OneWire(ins)  #  1-Wire path
     ds = ds18x20.DS18X20(ow)  #  ds18x20 class instance
     roms = ds.scan()  #  64bit roms <class 'list'>
-    rom = roms[0]  #  Set [0] because there is only DS18B20 for 1-Wire
-    temp = ds.convert_temp()  #  Store temp datum in the scratchpad
-    time.sleep(1)
-    temp = ds.read_temp(rom)  #  Get Celsius temp
-    return temp
-
+    try:
+        rom = roms[0]  #  Set [0] because there is only DS18B20 for 1-Wire
+        temp = ds.convert_temp()  #  Store temp datum in the scratchpad
+        time.sleep(1)
+        temp = ds.read_temp(rom)  #  Get Celsius temp
+        return temp
+    except IndexError:
+        return None
 
 def meas_adc(ins):
     volt = ins.read_u16() / 65535 * 3.3
@@ -122,7 +124,7 @@ def post(data):
     body = f"{MAC} {data}"
     print(body)
     res = requests.post(
-        ENDPOINT, headers=HEADER, data=f"{body}"
+        ENDPOINT, headers=HEADER, data=f"{body}", timeout=30
     )  #  API POST postAPI('temp',HOST','temp=35')
     code = res.status_code
     text = res.text
@@ -154,7 +156,8 @@ while True:
         dec_temp = "temp=" + f"{avg(raw_temp, 5, 0)},"
     else:
         dec_temp = ""
-    if raw_weight := (get_raw_hx() * 0.00186277 + 1008.6124) / 1000:
+    if raw_weight := get_raw_hx():
+        weight = (get_raw_hx() * 0.00186277 + 1008.6124) / 1000
         dec_weight = "weight=" + f"{avg(raw_weight,5,0.1)},"
     else:
         dec_weight = ""
@@ -179,4 +182,4 @@ while True:
         print(f"OSError: " + f"{e}")
         led1.on()
     finally:
-        time.sleep(30)
+        time.sleep(60)
