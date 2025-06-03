@@ -107,6 +107,7 @@ def get_onetemp(ins):
     except IndexError:
         return None
 
+
 def meas_adc(ins):
     volt = ins.read_u16() / 65535 * 3.3
     return volt
