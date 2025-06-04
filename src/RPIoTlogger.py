@@ -29,10 +29,11 @@ wlan = network.WLAN(network.STA_IF)
 
 def connect():
     wlan.deinit()
-    time.sleep(5)
+    time.sleep(3)
     wlan.active(True)
-    time.sleep(5)
+    time.sleep(3)
     wlan.connect(ssid=SSID, key=PASSWORD)
+    time.sleep(1)
 
     while not wlan.isconnected() and wlan.status() >= 0:
         blink(led1, 5, 0.1)
@@ -40,6 +41,7 @@ def connect():
         time.sleep(5)
     s = wlan.status()
     print(s)
+    print(wlan.ifconfig())
     return s
 
 
@@ -48,14 +50,7 @@ def getMac():
     MAC = str(binascii.hexlify(rawMac), "utf-8")
     return MAC
 
-
 MAC = getMac()
-
-while not wlan.isconnected():
-    connect()
-    time.sleep(5)
-
-led1.off()
 
 
 hx = hx711(machine.Pin(18), machine.Pin(19))
@@ -141,6 +136,10 @@ while True:
     int_led.on()
     led1.off()
     led2.off()
+    while not wlan.isconnected():
+        connect()
+        time.sleep(5)
+        
     if raw_int_temp := 27 - (meas_adc(INT_TEMP_PIN) - 0.706) / 0.001721:
         dec_int_temp = "int_temp=" + f"{avg(raw_int_temp, 5, 0.01)},"
     else:
