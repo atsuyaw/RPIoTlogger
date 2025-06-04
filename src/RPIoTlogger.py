@@ -11,12 +11,9 @@ from config import *
 app = "atsuyaw/RPIoTlogger"
 ver = "0.0.2"
 
-int_led = machine.Pin(25, machine.Pin.OUT)
-led1 = machine.Pin(2, machine.Pin.OUT)
-led2 = machine.Pin(3, machine.Pin.OUT)
-sw1 = machine.Pin(10, machine.Pin.IN, machine.Pin.PULL_UP)
+int_led = machine.Pin("LED", machine.Pin.OUT)
 
-int_led.on()
+int_led.off()
 led1.off()
 led2.off()
 
@@ -141,6 +138,7 @@ def post(data):
 # sw1.value() == 1
 
 while True:
+    int_led.on()
     led1.off()
     led2.off()
     if raw_int_temp := 27 - (meas_adc(INT_TEMP_PIN) - 0.706) / 0.001721:
