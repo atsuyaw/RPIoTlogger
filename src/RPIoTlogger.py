@@ -9,7 +9,7 @@ from hx711 import *
 from config import *
 
 app = "atsuyaw/RPIoTlogger"
-ver = "0.0.1"
+ver = "0.0.2"
 
 int_led = machine.Pin(25, machine.Pin.OUT)
 led1 = machine.Pin(2, machine.Pin.OUT)
