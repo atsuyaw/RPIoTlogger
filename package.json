@@ -1,0 +1,9 @@
+{
+    "urls": [
+      ["RPIoTlogger.py", "github:atsuyaw/RPIoTlogger/src/RPIoTlogger.py"],
+      ["hx711.py", "github:atsuyaw/hx711-pico-mpy/src/hx711.py"]
+    ],
+    "deps": [
+    ],
+    "version": "0.0.1"
+}

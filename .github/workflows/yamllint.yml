@@ -1,0 +1,27 @@
+name: YAML Lint
+
+"on": push
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r .github/yamllint.requirements.txt
+      - name: yamllint
+        run: |
+          yamllint \
+          --format github \
+          -c ./.github/.yamllint .

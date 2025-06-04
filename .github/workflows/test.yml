@@ -1,0 +1,45 @@
+name: Test Python package
+
+"on":
+  push:
+    branches-ignore:
+      - patch/*
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  formatter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r ./.github/test.requirements.txt
+      - name: Run autoflake
+        run: |
+          autoflake \
+          --in-place \
+          --remove-all-unused-imports \
+          --remove-unused-variables \
+          --recursive .
+      - name: Run isort
+        run: isort --profile black .
+      - run: black .
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          author: >-
+            github-actions[bot]
+            <41898282+github-actions[bot]@users.noreply.github.com>
+          commit-message: "fix: CI suggestion"
+          branch: "patch/${{ github.ref_name }}"
+          title: "fix: CI Suggestion for ${{ github.ref_name }}"
