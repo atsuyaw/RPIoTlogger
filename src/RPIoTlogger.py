@@ -50,6 +50,7 @@ def getMac():
     MAC = str(binascii.hexlify(rawMac), "utf-8")
     return MAC
 
+
 MAC = getMac()
 
 
@@ -139,7 +140,7 @@ while True:
     while not wlan.isconnected():
         connect()
         time.sleep(5)
-        
+
     if raw_int_temp := 27 - (meas_adc(INT_TEMP_PIN) - 0.706) / 0.001721:
         dec_int_temp = "int_temp=" + f"{avg(raw_int_temp, 5, 0.01)},"
     else:
