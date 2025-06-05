@@ -1,5 +1,9 @@
 import machine
 
+led1 = machine.Pin(2, machine.Pin.OUT)
+led2 = machine.Pin(3, machine.Pin.OUT)
+sw1 = machine.Pin(10, machine.Pin.IN, machine.Pin.PULL_UP)
+
 INT_TEMP_PIN = machine.ADC(4)
 
 PH_PIN = machine.ADC(28)  # for pH meas
